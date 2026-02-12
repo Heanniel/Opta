@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="style.css?v=3.0">
+    <title>DecididoX</title>
+</head>
+<body>
+    <!-- Barra superior simplificada - SIEMPRE VISIBLE -->
+    <nav class="topnav">
+        <div class="brand">
+            Decidiox 
+            <span id="currentModeBadge" class="mode-badge" aria-live="polite">Simple</span> 
+            <span id="optionsCount" class="options-count" aria-live="polite">0/3</span>
+        </div>
+        <button id="themeToggle" class="theme-toggle" aria-label="Cambiar tema">
+            <div class="icon-container">
+                <span class="icon sun" aria-hidden="true">☀️</span>
+                <span class="icon moon" aria-hidden="true">🌙</span>
+            </div>
+        </button>
+    </nav>
+
+    <!-- Contenido principal - SE OCULTA CUANDO APARECE EL SOBRE -->
+    <main class="content" id="mainContent">
+        <h2>Tu página que te ayuda a tomar decisiones</h2>
+
+        <!-- Barra para añadir opciones -->
+        <div class="input-row">
+            <input type="text" id="optionInput" name="decididox_option" 
+                placeholder="Escribe una opción" autocomplete="off" 
+                spellcheck="false" autocorrect="off" autocapitalize="off" />
+            <button id="addOptionBtn">Añadir opción</button>
+        </div>
+
+        <!-- Botón para cambiar modo -->
+        <div class="mode-toggle-container">
+            <button id="modeToggleBtn" class="mode-toggle-btn">
+                <span class="mode-text">Cambiar a Múltiple</span>
+                <span class="mode-icon">→</span>
+            </button>
+        </div>
+
+        <!-- Acciones principales -->
+        <div class="actions">
+            <button id="decideBtn" class="primary">Decidir</button>
+            <button id="clearBtn" class="danger">Limpiar</button>
+        </div>
+
+        <!-- Contenedor de cartas -->
+        <div id="cardsContainer" class="cards-container">
+            <!-- Las cartas se insertarán aquí dinámicamente -->
+        </div>
+    </main>
+    
+    <!-- Contador de suspenso -->
+    <div id="countdown" class="countdown">
+        <div class="countdown-text">Decidiendo en: <span id="countdownNumber">3</span></div>
+        <div class="countdown-bar">
+            <div class="countdown-fill"></div>
+        </div>
+    </div>
+
+    <!-- Script -->
+    <script src="codigo.js"></script>
+</body>
+</html>
