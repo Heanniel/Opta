@@ -4,13 +4,14 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="style.css?v=3.0">
-    <title>DecididoX</title>
+    <title>OPTA · Opciones para Priorizar Tiempo y Análisis</title>
+    <meta name="description" content="OPTA: El azar que te aclara. Ayuda a tomar decisiones mediante un sistema de azar controlado.">
 </head>
 <body>
-    <!-- Barra superior simplificada - SIEMPRE VISIBLE -->
+    <!-- Barra superior - OPTA -->
     <nav class="topnav">
         <div class="brand">
-            Decidiox 
+            OPTA 
             <span id="currentModeBadge" class="mode-badge" aria-live="polite">Simple</span> 
             <span id="optionsCount" class="options-count" aria-live="polite">0/3</span>
         </div>
@@ -22,15 +23,16 @@
         </button>
     </nav>
 
-    <!-- Contenido principal - SE OCULTA CUANDO APARECE EL SOBRE -->
+    <!-- Contenido principal -->
     <main class="content" id="mainContent">
-        <h2>Tu página que te ayuda a tomar decisiones</h2>
+        <h2>Opciones para Priorizar Tiempo y Análisis</h2>
+        <p class="subtitle">El azar que te aclara</p>
 
         <!-- Barra para añadir opciones -->
         <div class="input-row">
-            <input type="text" id="optionInput" name="decididox_option" 
-                placeholder="Escribe una opción" autocomplete="off" 
-                spellcheck="false" autocorrect="off" autocapitalize="off" />
+            <input type="text" id="optionInput" name="opta_option" 
+                   placeholder="Escribe una opción" autocomplete="off" 
+                   spellcheck="false" autocorrect="off" autocapitalize="off" />
             <button id="addOptionBtn">Añadir opción</button>
         </div>
 
@@ -56,7 +58,7 @@
     
     <!-- Contador de suspenso -->
     <div id="countdown" class="countdown">
-        <div class="countdown-text">Decidiendo en: <span id="countdownNumber">3</span></div>
+        <div class="countdown-text">Optar en: <span id="countdownNumber">3</span></div>
         <div class="countdown-bar">
             <div class="countdown-fill"></div>
         </div>

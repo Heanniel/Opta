@@ -29,12 +29,19 @@ document.addEventListener('DOMContentLoaded', () => {
     // ============ FUNCIONES DE ALMACENAMIENTO ============
     function loadFromStorage() {
         try {
-            const savedOptions = localStorage.getItem('decididox_options');
+            const savedOptions = localStorage.getItem('opta_options');
             options = savedOptions ? JSON.parse(savedOptions) : [];
             
-            const savedMode = localStorage.getItem('decididox_mode');
+            const savedMode = localStorage.getItem('opta_mode');
             if (savedMode === 'simple' || savedMode === 'multiple') {
                 mode = savedMode;
+            }
+            
+            const savedTheme = localStorage.getItem('opta_theme');
+            if (savedTheme === 'dark' || savedTheme === 'light') {
+                applyTheme(savedTheme);
+            } else {
+                applyTheme('light');
             }
         } catch (e) {
             options = [];
@@ -46,8 +53,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function saveToStorage() {
-        localStorage.setItem('decididox_options', JSON.stringify(options));
-        localStorage.setItem('decididox_mode', mode);
+        localStorage.setItem('opta_options', JSON.stringify(options));
+        localStorage.setItem('opta_mode', mode);
     }
 
     // ============ FUNCIONES DE VALIDACIÓN ============
@@ -72,7 +79,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="empty-state">
                     <div class="empty-state-text">
                         <p>No hay opciones aún</p>
-                        <small>Escribe una opción arriba y haz clic en "Añadir opción"</small>
+                        <small>Escribe una opción arriba y haz clic en "Añadir"</small>
                     </div>
                 </div>
             `;
@@ -90,7 +97,7 @@ document.addEventListener('DOMContentLoaded', () => {
             card.innerHTML = `
                 <div class="card-header">
                     <div class="card-number">${idx + 1}</div>
-                    <button class="card-delete-btn" aria-label="Eliminar opción">×</button>
+                    <button class="card-delete-btn" aria-label="Eliminar opción">✕</button>
                 </div>
                 <div class="card-content">
                     <div class="card-text">${normalizedOpt}</div>
@@ -159,7 +166,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // ============ AÑADIR OPCIÓN ============
     function addOption() {
         if (isDeciding || isAnimating) {
-            showNotification('Espera a que termine la decisión actual', 'error');
+            showNotification('Espera a que termine el proceso', 'error');
             return;
         }
         
@@ -172,7 +179,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         
         if (value.length < 2) {
-            showNotification('La opción debe tener al menos 2 caracteres', 'error');
+            showNotification('Mínimo 2 caracteres', 'error');
             input.classList.add('error');
             setTimeout(() => input.classList.remove('error'), 2000);
             return;
@@ -181,14 +188,18 @@ document.addEventListener('DOMContentLoaded', () => {
         if (isDuplicateOption(value)) {
             showNotification('Esta opción ya existe', 'warning');
             input.classList.add('error');
-            setTimeout(() => input.classList.remove('error'), 2000);
+            input.style.animation = 'shake 0.5s ease';
+            setTimeout(() => {
+                input.style.animation = '';
+                input.classList.remove('error');
+            }, 2000);
             return;
         }
         
         const maxOptions = getMaxOptions();
         
         if (options.length >= maxOptions) {
-            showNotification(`Máximo ${maxOptions} opciones permitidas`, 'error');
+            showNotification(`Máximo ${maxOptions} opciones`, 'error');
             return;
         }
         
@@ -204,7 +215,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // ============ CAMBIAR MODO ============
     function toggleMode() {
         if (isDeciding || isAnimating) {
-            showNotification('Espera a que termine la decisión actual', 'error');
+            showNotification('Espera a que termine el proceso', 'error');
             return;
         }
         
@@ -232,10 +243,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // ============ DECISIÓN CON SUSPENSO ============
+    // ============ PROCESO OPTA ============
     function decide() {
         if (isDeciding || isAnimating) {
-            showNotification('Ya se está tomando una decisión', 'error');
+            showNotification('Ya hay un proceso en curso', 'error');
             return;
         }
         
@@ -251,7 +262,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         } else {
             if (options.length < 4) {
-                showNotification('Modo múltiple requiere al menos 4 opciones', 'error');
+                showNotification('Modo múltiple: mínimo 4 opciones', 'error');
                 return;
             }
         }
@@ -326,14 +337,13 @@ document.addEventListener('DOMContentLoaded', () => {
         return round[0];
     }
 
-    // ============ ANIMACIÓN DE CASINO COMPLETA ============
+    // ============ ANIMACIÓN DE CASINO ============
     function startCasinoAnimation(winnerIndex, selectedOption) {
         const cards = document.querySelectorAll('.option-card');
         const containerRect = cardsContainer.getBoundingClientRect();
         const centerX = containerRect.width / 2;
         const centerY = containerRect.height / 2;
         
-        // Crear overlay de animación
         const overlay = document.createElement('div');
         overlay.className = 'animation-overlay';
         overlay.innerHTML = `
@@ -348,7 +358,6 @@ document.addEventListener('DOMContentLoaded', () => {
         cardsContainer.classList.add('animating');
         cardsContainer.appendChild(overlay);
         
-        // Fase 1: Voltear todas las cartas
         cards.forEach((card, index) => {
             const cardBack = document.createElement('div');
             cardBack.className = 'card-back';
@@ -383,7 +392,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }, index * 200);
         });
         
-        // Fase 2: Mezclar cartas
         setTimeout(() => {
             overlay.querySelector('.animation-text').textContent = '¡Mezclando cartas!';
             
@@ -406,23 +414,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 }, index * 50);
             });
             
-            // Fase 3: Desaparecer cartas y mostrar sobre
             setTimeout(() => {
-                overlay.querySelector('.animation-text').textContent = '¡Preparando el sobre ganador!';
+                overlay.querySelector('.animation-text').textContent = '¡Preparando el sobre!';
                 
                 cards.forEach((card, index) => {
                     card.style.animation = `fadeOutCards 0.5s ${index * 0.05}s forwards`;
                 });
                 
                 setTimeout(() => {
-                    // OCULTAR CONTENIDO PRINCIPAL
                     content.classList.add('hidden');
                     cardsContainer.classList.add('hidden');
                     
-                    // LIMPIAR OVERLAY
                     overlay.remove();
                     
-                    // CREAR SOBRE CENTRADO (SIN TEXTO EXTRA)
                     const envelopeContainer = document.createElement('div');
                     envelopeContainer.className = 'envelope-container';
                     envelopeContainer.id = 'envelopeContainer';
@@ -449,7 +453,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     const seal = envelope.querySelector('.envelope-seal');
                     const letterReveal = document.getElementById('letterReveal');
                     
-                    // EVENTO DEL SOBRE
                     envelope.addEventListener('click', function openEnvelope() {
                         seal.textContent = '🎉';
                         seal.style.transform = 'translateX(-50%) scale(1.2)';
@@ -457,25 +460,20 @@ document.addEventListener('DOMContentLoaded', () => {
                         envelope.classList.add('hidden');
                         letterReveal.classList.add('show');
                         
-                        // CREAR BOTÓN DE REINICIO
                         const resetBtn = document.createElement('button');
                         resetBtn.className = 'reset-winner-btn';
                         resetBtn.id = 'resetWinnerBtn';
                         resetBtn.textContent = 'Volver a las opciones';
                         
                         resetBtn.addEventListener('click', function resetGame() {
-                            // MOSTRAR CONTENIDO PRINCIPAL
                             content.classList.remove('hidden');
                             cardsContainer.classList.remove('hidden');
                             
-                            // ELIMINAR SOBRE Y CARTA
                             const envelopeContainer = document.getElementById('envelopeContainer');
                             if (envelopeContainer) envelopeContainer.remove();
                             
-                            // ELIMINAR BOTÓN DE REINICIO
                             this.remove();
                             
-                            // REINICIAR ESTADO
                             cardsContainer.innerHTML = '';
                             render();
                             updateInputValidation();
@@ -507,7 +505,7 @@ document.addEventListener('DOMContentLoaded', () => {
         confettiContainer.className = 'confetti-container';
         confettiContainer.id = 'confettiContainer';
         
-        const colors = ['#4a90e2', '#38a169', '#e53e3e', '#ed8936', '#7bb1f0'];
+        const colors = ['#4a90e2', '#38a169', '#e65a5a', '#ed8936', '#7bb1f0'];
         
         for (let i = 0; i < 60; i++) {
             const confetti = document.createElement('div');
@@ -563,7 +561,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // ============ LIMPIAR TODO ============
     function clearAll() {
         if (isDeciding || isAnimating) {
-            showNotification('Espera a que termine la decisión actual', 'error');
+            showNotification('Espera a que termine el proceso', 'error');
             return;
         }
         
@@ -590,7 +588,7 @@ document.addEventListener('DOMContentLoaded', () => {
             document.body.classList.remove('dark');
             themeToggle.setAttribute('aria-label', 'Cambiar a tema oscuro');
         }
-        localStorage.setItem('decididox_theme', theme);
+        localStorage.setItem('opta_theme', theme);
     }
 
     // ============ EVENT LISTENERS ============
@@ -602,6 +600,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     input.addEventListener('input', () => {
         input.classList.remove('error');
+        input.style.animation = '';
     });
     
     decideBtn.addEventListener('click', decide);
@@ -615,9 +614,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // ============ INICIALIZACIÓN ============
-    const savedTheme = localStorage.getItem('decididox_theme');
-    applyTheme(savedTheme === 'dark' ? 'dark' : 'light');
-    
     loadFromStorage();
     
     setTimeout(() => {
